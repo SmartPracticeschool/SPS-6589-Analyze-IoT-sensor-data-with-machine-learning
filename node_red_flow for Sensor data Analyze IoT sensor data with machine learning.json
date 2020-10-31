@@ -126,7 +126,7 @@
         "method": "POST",
         "ret": "obj",
         "paytoqs": "ignore",
-        "url": "https://us-south.ml.cloud.ibm.com/ml/v4/deployments/dazcsa-dc0d-4563-b32e-9dffdfr35d0/predictions?version=2020-10-26",
+        "url": "https://us-south.ml.cloud.ibm.com/ml/v4/deployments/dazcsa-dc0d-4563-b32e-9dffdfr3sd2/predictions?version=2020-10-26",
         "tls": "",
         "persist": false,
         "proxy": "",
@@ -383,7 +383,7 @@
         "z": "",
         "name": "weather-sensor",
         "keepalive": "60",
-        "serverName": "rmeddf.messaging.internetofthings.ibmcloud.com",
+        "serverName": "sdfdf.messaging.internetofthings.ibmcloud.com",
         "cleansession": true,
         "appId": "",
         "shared": false
