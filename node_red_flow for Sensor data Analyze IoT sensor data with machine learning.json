@@ -1,0 +1,408 @@
+[
+    {
+        "id": "cc86d7c5.69571",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "ebe2a4ea.9ef39",
+        "type": "debug",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 790,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "3e7c58d0.dd46",
+        "type": "http request",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://iam.cloud.ibm.com/identity/token",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 390,
+        "y": 400,
+        "wires": [
+            [
+                "f4060551.9ae008",
+                "feb62d5c.f6c11"
+            ]
+        ]
+    },
+    {
+        "id": "da6a024c.768e38",
+        "type": "function",
+        "z": "cc86d7c5.69571",
+        "name": "Pre-tocken",
+        "func": "global.set(\"temperature\",msg.payload.temperature)\nglobal.set(\"humidity\",msg.payload.humidity)\nglobal.set(\"wind\",msg.payload.wind)\nvar apikey=\"EWs12WZpHJQkUEz6nlHWZUyn9rTlA6a_JWWxglmRwV2b\";\nmsg.headers={\"content-type\":\"application/x-www-form-urlencoded\"}\nmsg.payload={\"grant_type\":\"urn:ibm:params:oauth:grant-type:apikey\",\"apikey\":apikey}\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 290,
+        "y": 300,
+        "wires": [
+            [
+                "3e7c58d0.dd46"
+            ]
+        ]
+    },
+    {
+        "id": "f4060551.9ae008",
+        "type": "function",
+        "z": "cc86d7c5.69571",
+        "name": "Pre-Prediction",
+        "func": "var temperature = global.get(\"temperature\")\nvar humidity = global.get(\"humidity\")\nvar wind = global.get(\"wind\")\nvar token=msg.payload.access_token\nmsg.headers={'Content-Type': 'application/json',\"Authorization\":\"Bearer \"+token,\"Accept\":\"application/json\"}\nmsg.payload={\"input_data\":[{\"fields\": [[\"temperature\", \"humidity\", \"wind\"]],\"values\": [[temperature,humidity,wind]]}]}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 610,
+        "y": 360,
+        "wires": [
+            [
+                "f4ce895d.24c0d8"
+            ]
+        ]
+    },
+    {
+        "id": "feb62d5c.f6c11",
+        "type": "debug",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "62f4423c.24019c",
+        "type": "function",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "func": "var temperature = global.get ('temperature')\nvar humidity = global.get ('humidity')\nvar wind = global.get ('wind')\nvar output=msg.payload.predictions[0].values[0][0]\nglobal.set(\"ouptut\",output)\n if (output === 0)\n {\nmsg.payload = {\n details: {\n Rainfall: {\n temperature: temperature,\n humidity: humidity,\n wind: wind,\n output: \"No Rain\"\n }\n }\n}\nreturn msg;\n}\nif (output === 1)\n {\nmsg.payload = {\n details: {\n Rainfall: {\n temperature: temperature,\n humidity: humidity,\n wind: wind,\n output: \"Rain\"\n }\n }\n}\nreturn msg;\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "x": 730,
+        "y": 280,
+        "wires": [
+            [
+                "c0c22da0.85ffc8",
+                "ad875bec.96e9b8"
+            ]
+        ]
+    },
+    {
+        "id": "f4ce895d.24c0d8",
+        "type": "http request",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "method": "POST",
+        "ret": "obj",
+        "paytoqs": "ignore",
+        "url": "https://us-south.ml.cloud.ibm.com/ml/v4/deployments/aba401a8-dc0d-4093-b32e-9d511a4235d0/predictions?version=2020-10-31",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "authType": "",
+        "x": 779,
+        "y": 420,
+        "wires": [
+            [
+                "62f4423c.24019c",
+                "717430f5.46a02"
+            ]
+        ]
+    },
+    {
+        "id": "717430f5.46a02",
+        "type": "debug",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "ad875bec.96e9b8",
+        "type": "debug",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 950,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "c0c22da0.85ffc8",
+        "type": "ui_text",
+        "z": "cc86d7c5.69571",
+        "group": "a58fd73b.caf7a8",
+        "order": 6,
+        "width": "17",
+        "height": "2",
+        "name": "",
+        "label": "Status",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 930,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "18135f45.f8a839",
+        "type": "inject",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 80,
+        "y": 320,
+        "wires": [
+            [
+                "da6a024c.768e38"
+            ]
+        ]
+    },
+    {
+        "id": "88350304.25bc58",
+        "type": "ui_gauge",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "group": "dfb04546.3f7768",
+        "order": 1,
+        "width": "6",
+        "height": "6",
+        "gtype": "gage",
+        "title": "humidity",
+        "label": "Degree",
+        "format": "{{ msg.payload.temperature}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 470,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "100a5b6e.59d62d",
+        "type": "ui_gauge",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "group": "888e464c.a41328",
+        "order": 3,
+        "width": "6",
+        "height": "6",
+        "gtype": "gage",
+        "title": "wind",
+        "label": "units",
+        "format": "{{msg.payload.wind}}",
+        "min": 0,
+        "max": "60",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 460,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "79fcb51.c2dd9cc",
+        "type": "ui_gauge",
+        "z": "cc86d7c5.69571",
+        "name": "",
+        "group": "bc510073.10f2a8",
+        "order": 4,
+        "width": "6",
+        "height": "6",
+        "gtype": "gage",
+        "title": "temperature",
+        "label": "",
+        "format": "{{ msg.payload.temperature}}",
+        "min": 0,
+        "max": "60",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 500,
+        "y": 60,
+        "wires": []
+    },
+    {
+        "id": "310391c8.7497de",
+        "type": "ibmiot in",
+        "z": "cc86d7c5.69571",
+        "authentication": "apiKey",
+        "apiKey": "14Sed2fe.7bce4e",
+        "inputType": "evt",
+        "logicalInterface": "",
+        "ruleId": "",
+        "deviceId": "12345",
+        "applicationId": "",
+        "deviceType": "weather-sensor",
+        "eventType": "+",
+        "commandType": "",
+        "format": "json",
+        "name": "IBM IoT",
+        "service": "registered",
+        "allDevices": false,
+        "allApplications": "",
+        "allDeviceTypes": false,
+        "allLogicalInterfaces": "",
+        "allEvents": false,
+        "allCommands": "",
+        "allFormats": "",
+        "qos": 0,
+        "x": 220,
+        "y": 160,
+        "wires": [
+            [
+                "79fcb51.c2dd9cc",
+                "88350304.25bc58",
+                "100a5b6e.59d62d",
+                "da6a024c.768e38"
+            ]
+        ]
+    },
+    {
+        "id": "a58fd73b.caf7a8",
+        "type": "ui_group",
+        "z": "",
+        "name": "IoT Weather",
+        "tab": "b5ef060c.c8794",
+        "order": 3,
+        "disp": true,
+        "width": "17",
+        "collapse": false
+    },
+    {
+        "id": "dfb04546.3f7768",
+        "type": "ui_group",
+        "z": "",
+        "name": "humidity",
+        "tab": "2fb4b4dc.b38a84",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "888e464c.a41328",
+        "type": "ui_group",
+        "z": "",
+        "name": "wind",
+        "tab": "2fb4b4dc.b38a84",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "bc510073.10f2a8",
+        "type": "ui_group",
+        "z": "",
+        "name": "temperature",
+        "tab": "2fb4b4dc.b38a84",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "3e8ed2fe.7bce4e",
+        "type": "ibmiot",
+        "z": "",
+        "name": "weather-sensor",
+        "keepalive": "60",
+        "serverName": "rmeddf.messaging.internetofthings.ibmcloud.com",
+        "cleansession": true,
+        "appId": "",
+        "shared": false
+    },
+    {
+        "id": "b5ef060c.c8794",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Analysis",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "2fb4b4dc.b38a84",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]
