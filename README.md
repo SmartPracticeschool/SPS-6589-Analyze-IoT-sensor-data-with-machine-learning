@@ -55,7 +55,7 @@ details of node red jason file is covered in ---node_red_flow for Sensor data An
 The project is deployed on IBM Cloud Foundry. [Link](https://node-red-gpayq-2020-10-01.mybluemix.net/ui). 
 
 # Contributers
-### * [Ajay Chaudhary](https://github.com/ajaymahiya)
+* ### [Ajay Chaudhary](https://github.com/ajaymahiya)
 
 # Live Demo
 To see a live demo of Analyze IoT sensor data with machine learning model please [Click here](https://node-red-gpayq-2020-10-01.mybluemix.net/ui). 
